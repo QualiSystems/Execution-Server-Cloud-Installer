@@ -92,6 +92,9 @@ fi
 yes | yum -y install python-pip
 yes | pip install -U pip
 
+# install wget 
+yum -y install wget
+
 # create installation directory
 mkdir -p $ES_INSTALL_PATH
 
