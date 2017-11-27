@@ -98,7 +98,7 @@ yum -y install wget
 # create installation directory
 mkdir -p $ES_INSTALL_PATH
 
-# download ES
+# download ES - default retry is 20
 wget $ES_DOWNLOAD_LINK -O es.tar
 tar -xf es.tar -C $ES_INSTALL_PATH
 
