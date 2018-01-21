@@ -42,8 +42,7 @@ install_mono () {
 	# Add Mono repository
 	yum-config-manager --add-repo http://download.mono-project.com/repo/centos/
 	# Install Mono
-	# yes | yum install mono-devel-4.0.1 --skip-broken  -- not needed
-	yes | yum install mono-complete-4.0.1 --skip-broken
+	yes | yum install mono-complete-5.4.1.6 --skip-broken
 	# Install required stuff to build cryptography package
 	yes | yum -y install gcc 
 	yes | yum -y install python-devel
