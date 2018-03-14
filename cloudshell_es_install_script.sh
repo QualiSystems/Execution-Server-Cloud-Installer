@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REQUIRED_MONO_VERSION="4.0.1"
+REQUIRED_MONO_VERSION="5.4.1"
 ES_DOWNLOAD_LINK="https://s3.amazonaws.com/alex-az/ExecutionServer.tar"
 ES_INSTALL_PATH="/opt/ExecutionServer/"
 
@@ -52,25 +52,15 @@ install_mono () {
 	
 }
 
-#setup_supervisor() {
-#	# Install Needed Package
-#	yes | yum install python-setuptools
-#	yes | yum install supervisor
-#	# create config file
-#	echo_supervisord_conf > /etc/supervisord.conf
-#	echo -e '\n[program:cloudshell_execution_server]\ndirectory='$ES_INSTALL_PATH'\ncommand=/bin/bash -c "/usr/bin/mono QsExecutionServerConsoleConfig.exe /s:'$cs_server_host' /u:'$cs_server_user' /p:'$cs_server_pass' /esn:'$es_name' /i:'$ES_NUMBER_OF_SLOTS' && /usr/bin/mono QsExecutionServer.exe console"\nenvironment=MONO_IOMAP=all\n' >> /etc/supervisord.conf
-#	setenforce 0
-#	systemctl enable supervisord.service
-#}
-
 configure_systemctl_service() {
-	echo "configuring execution server as a systemctl service"
-	# create service config file
-	echo -e '[Unit]\nDescription=CloudShell Execution Server Service\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nEnvironment=MONO_IOMAP=all\nWorkingDirectory=/opt/ExecutionServer\nExecStart=/bin/bash -c "/usr/bin/mono QsExecutionServerConsoleConfig.exe /s:'$cs_server_host' /u:'$cs_server_user' /p:'$cs_server_pass' /esn:'$es_name' /i:'$ES_NUMBER_OF_SLOTS' && /usr/bin/mono-service -d:/opt/ExecutionServer /opt/ExecutionServer/QsExecutionServer.exe --no-daemon"\nRestart=on-abort\n\n[Install]\nWantedBy=multi-user.target\n' > /usr/lib/systemd/system/qs_execution_server.service
-	# reload systemctl
-	systemctl daemon-reload
+	echo "Configuring execution server as a systemctl service"
+	
+	# run service.sh
+	chmod 755 $ES_INSTALL_PATH/service.sh
+	$ES_INSTALL_PATH/service.sh $cs_server_host $cs_server_user $cs_server_pass $es_name $ES_INSTALL_PATH
+	
 	# enable the service - service is still not started in this point
-	systemctl enable qs_execution_server
+	systemctl enable es
 }
 
 # Install Python pip
@@ -116,8 +106,6 @@ else
 	install_mono
 fi
 
-#setup_supervisor
-
 # install virtualenv
 pip install virtualenv
 
@@ -128,7 +116,8 @@ pip install virtualenv
 # configure the execution server as a service
 configure_systemctl_service
 
-echo "starting execution server service"
-systemctl start qs_execution_server
+echo "Starting execution server service"
+systemctl start es
 
+# remove downloaded binaries
 rm es.tar
