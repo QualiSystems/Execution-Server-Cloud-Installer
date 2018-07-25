@@ -107,7 +107,7 @@ else
 fi
 
 # install virtualenv
-pip install virtualenv==15.1.0
+pip install --upgrade virtualenv==15.1.0
 
 # add python path to customer.config
 # python_path=$(which python)
