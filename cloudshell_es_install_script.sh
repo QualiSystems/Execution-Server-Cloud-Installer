@@ -79,7 +79,7 @@ then
 fi
 
 yes | yum -y install python-pip
-yes | pip install -U pip
+yes | pip install -U pip==9.0.1
 
 # install wget 
 yum -y install wget
@@ -107,7 +107,7 @@ else
 fi
 
 # install virtualenv
-pip install virtualenv
+pip install --upgrade virtualenv==15.1.0
 
 # add python path to customer.config
 # python_path=$(which python)
