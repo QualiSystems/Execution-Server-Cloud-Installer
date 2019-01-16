@@ -63,6 +63,21 @@ configure_systemctl_service() {
 	systemctl enable es
 }
 
+install_python3() {
+    echo "Installing Python 3"
+    yes | yum -y install libffi-devel
+    cd /usr/src
+    wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz
+    tar xzf Python-3.7.2.tgz
+    cd Python-3.7.2
+    ./configure --prefix=/usr --enable-optimizations
+    make altinstall
+    rm -f /usr/src/Python-3.7.2.tgz
+    # create symlink for python3
+    ln -s /usr/bin/python3.7 /usr/bin/python3
+}
+
+
 # Install Python pip
 yum-complete-transaction -y --cleanup-only
 yum clean all
@@ -79,7 +94,6 @@ then
 fi
 
 yes | yum -y install python-pip
-yes | pip install -U pip==9.0.1
 
 # install wget 
 yum -y install wget
@@ -106,12 +120,25 @@ else
 	install_mono
 fi
 
-# install virtualenv
-pip install --upgrade virtualenv==15.1.0
+echo -n "checking if Python 3 is installed... "
+if ! [type python3 &> /dev/null]
+    then
+        echo "no"
+        install_python3
+else    
+    echo "yes"
+fi
+
+# install python packages
+python -m pip install pip==18.1 -U
+python -m pip install virtualenv==16.2.0 -U
+python3 -m pip install pip==18.1 -U
+python3 -m pip install virtualenv==16.2.0 -U
 
 # add python path to customer.config
 # python_path=$(which python)
-# sed -i "s~</appSettings>~<add key='ScriptRunnerExecutablePath' value='${python_path}' />\n</appSettings>~g" customer.config
+# python3_path=$(which python3)
+# sed -i "s~</appSettings>~<add key='ScriptRunnerExecutablePath' value='${python_path}' />\n~<add key='ScriptRunnerExecutablePathPython3' value='${python3_path}' />\n</appSettings>~g" customer.config
 
 # configure the execution server as a service
 configure_systemctl_service
