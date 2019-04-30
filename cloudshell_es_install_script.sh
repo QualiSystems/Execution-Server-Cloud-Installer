@@ -147,4 +147,5 @@ echo "Starting execution server service"
 systemctl start es
 
 # remove downloaded binaries
-rm es.tar
+# added force flag to ignore nonexistent files, and never prompt; was getting errors that file not found
+rm -f es.tar
