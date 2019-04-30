@@ -12,7 +12,7 @@ es_name=${4}  # "ES_NAME"
 
 
 command_exists () {
-    type "$1" &> /dev/null ;
+    type "$1" 2>/dev/null ;
 }
 
 contains() {
