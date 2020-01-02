@@ -39,6 +39,12 @@ install_mono () {
 	wget http://download.mono-project.com/repo/xamarin.gpg
 	# Import gpg key by running the following:
 	rpm --import xamarin.gpg
+	# Install yum-utils
+	if ! [command_exists yum-config-manager]
+	then
+		echo "Installing yum-utils"
+		yes | yum install yum-utils
+	fi
 	# Add Mono repository
 	yum-config-manager --add-repo http://download.mono-project.com/repo/centos/
 	# Install Mono
