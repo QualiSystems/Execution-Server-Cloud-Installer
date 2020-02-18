@@ -55,11 +55,7 @@ install_mono () {
 	yes | yum -y install openssl-devel
 	# Install requiered packages for the QsDriverHost
 	pip install -r $ES_INSTALL_PATH/packages/VirtualEnvironment/requirements.txt
-	PYTHON2_7_PATH=/usr/local/bin/python2.7
-	if [ ! -L $PYTHON2_7_PATH ];
-	then
-		ln -s /usr/bin/python2.7 $PYTHON2_7_PATH 
-	fi
+	
 }
 
 configure_systemctl_service() {
