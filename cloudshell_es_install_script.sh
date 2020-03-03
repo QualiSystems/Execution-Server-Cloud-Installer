@@ -84,7 +84,12 @@ install_python3() {
     make altinstall
     rm -f /usr/src/Python-3.7.2.tgz
     # create symlink for python3
-    ln -s /usr/bin/python3.7 /usr/bin/python3
+	PYTHON3_PATH=/usr/bin/python3
+	if [ -L $PYTHON3_PATH ];
+	then
+    	rm -f $PYTHON3_PATH
+	fi
+	ln -s /usr/bin/python3.7 $PYTHON3_PATH
 }
 
 
