@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REQUIRED_MONO_VERSION="5.4.1"
+REQUIRED_MONO_VERSION="5.20.1"
 ES_DOWNLOAD_LINK="https://s3.amazonaws.com/alex-az/ExecutionServer.tar"
 ES_INSTALL_PATH="/opt/ExecutionServer/"
 
@@ -48,7 +48,7 @@ install_mono () {
 	# Add Mono repository
 	yum-config-manager --add-repo http://download.mono-project.com/repo/centos/
 	# Install Mono
-	yes | yum install mono-complete-5.4.1.6 --skip-broken
+	yes | yum install mono-complete-5.20.1.34 --skip-broken
 	# Install required stuff to build cryptography package
 	yes | yum -y install gcc 
 	yes | yum -y install python-devel
