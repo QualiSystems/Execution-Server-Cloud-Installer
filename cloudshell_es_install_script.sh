@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REQUIRED_MONO_VERSION="4.0.1"
-ES_DOWNLOAD_LINK="https://s3.amazonaws.com/alex-az/ExecutionServer.tar"
+ES_DOWNLOAD_LINK="https://cf-dynamic-execution-server.s3.amazonaws.com/execution-server/ExecutionServer.tar"
 ES_INSTALL_PATH="/opt/ExecutionServer/"
 
 ES_NUMBER_OF_SLOTS=100
