@@ -46,7 +46,8 @@ install_mono () {
 		yes | yum install yum-utils
 	fi
 	# Add Mono repository
-	yum-config-manager --add-repo http://download.mono-project.com/repo/centos/
+	rpmkeys --import "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF"
+	su -c 'curl https://download.mono-project.com/repo/centos7-stable.repo | tee /etc/yum.repos.d/mono-centos7-stable.repo'
 	# Install Mono
 	yes | yum install mono-complete-5.16.0.220 --skip-broken
 	# Install required stuff to build cryptography package
