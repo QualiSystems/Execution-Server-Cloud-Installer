@@ -76,14 +76,14 @@ configure_systemctl_service() {
 
 install_python3() {
     echo "Installing Python 3"
-    yes | yum -y install libffi-devel
+    yes | yum -y install libffi-devel openssl-devel
     cd /usr/src
-    wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz
-    tar xzf Python-3.7.2.tgz
-    cd Python-3.7.2
+    wget https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tgz
+    tar xzf Python-3.9.9.tgz
+    cd Python-3.9.9
     ./configure --prefix=/usr --enable-optimizations
     make altinstall
-    rm -f /usr/src/Python-3.7.2.tgz
+    rm -f /usr/src/Python-3.9.9.tgz
     # create symlink for python3
 	PYTHON3_PATH=/usr/bin/python3
 	if [ -L $PYTHON3_PATH ];
