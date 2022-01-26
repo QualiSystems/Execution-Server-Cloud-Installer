@@ -146,10 +146,12 @@ else
 fi
 
 # install python packages
-python -m pip install pip==18.1 -U
-python -m pip install virtualenv==16.2.0 -U
-python3 -m pip install pip==18.1 -U
-python3 -m pip install virtualenv==16.2.0 -U
+python -m pip install pip==19.2.3 -U
+python -m pip install virtualenv==20.13.0 -U
+python -m pip install wheel==0.37.1 -U
+python3 -m pip install pip==21.2.4 -U
+python3 -m pip install virtualenv==20.13.0 -U
+python3 -m pip install wheel==0.37.1 -U
 
 # add python path to customer.config
 # python_path=$(which python)
