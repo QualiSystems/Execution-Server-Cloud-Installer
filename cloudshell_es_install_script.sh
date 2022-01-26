@@ -90,7 +90,7 @@ install_python3() {
 	then
     	rm -f $PYTHON3_PATH
 	fi
-	ln -s /usr/bin/python3.7 $PYTHON3_PATH
+	ln -s /usr/bin/python3.9 $PYTHON3_PATH
 }
 
 
