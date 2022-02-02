@@ -74,6 +74,23 @@ configure_systemctl_service() {
 	systemctl enable es
 }
 
+install_python2718() {
+    echo "Installing Python 2.7.18"
+    yes | yum -y install zlib*
+    cd /usr/src
+    wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+    tar xzf Python-2.7.18.tgz
+    cd Python-2.7.18.tgz
+    ./configure --enable-optimizations
+    make altinstall
+    rm -f /usr/src/Python-2.7.18.tgz
+    
+    python2.7 -m ensurepip  # will install pip and setuptools
+    # create symlink for python
+    ln -s /usr/local/bin/python2.7 /usr/local/bin/python
+}
+
+
 install_python3() {
     echo "Installing Python 3"
     yes | yum -y install libffi-devel openssl-devel
@@ -134,6 +151,15 @@ if [command_exists mono]
 	fi
 else
 	install_mono
+fi
+
+echo -n "checking if Python 2.7.18 is installed... "
+version=$(python -V 2>&1 | grep -Po '(?<=Python )(.+)')
+parsedVersion=$(echo "${version//./}")
+if [[ "$parsedVersion" -ne "2718" ]]
+then
+    echo "no"
+    install_python2718
 fi
 
 echo -n "checking if Python 3 is installed... "
