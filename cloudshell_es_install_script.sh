@@ -54,13 +54,6 @@ install_mono () {
 	yes | yum -y install gcc 
 	yes | yum -y install python-devel
 	yes | yum -y install openssl-devel
-	# Install requiered packages for the QsDriverHost
-	pip install -r $ES_INSTALL_PATH/packages/VirtualEnvironment/requirements.txt
-	PYTHON2_7_PATH=/usr/local/bin/python2.7
-	if [ ! -L $PYTHON2_7_PATH ];
-	then
-		ln -s /usr/bin/python2.7 $PYTHON2_7_PATH 
-	fi
 }
 
 configure_systemctl_service() {
@@ -73,6 +66,25 @@ configure_systemctl_service() {
 	# enable the service - service is still not started in this point
 	systemctl enable es
 }
+
+install_python2718() {
+    echo "Installing Python 2.7.18"
+    yes | yum -y install zlib*
+    cd /usr/src
+    wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+    tar xzf Python-2.7.18.tgz
+    cd Python-2.7.18
+    ./configure --enable-optimizations
+    make altinstall
+    rm -f /usr/src/Python-2.7.18.tgz
+    
+    python2.7 -m ensurepip  # will install pip and setuptools
+    # Install requiered packages for the QsDriverHost
+    python2.7 -m pip install -r $ES_INSTALL_PATH/packages/VirtualEnvironment/requirements.txt
+    # create symlink for python
+    ln -s /usr/local/bin/python2.7 /usr/local/bin/python
+}
+
 
 install_python3() {
     echo "Installing Python 3"
@@ -134,6 +146,15 @@ if [command_exists mono]
 	fi
 else
 	install_mono
+fi
+
+echo -n "checking if Python 2.7.18 is installed... "
+version=$(python -V 2>&1 | grep -Po '(?<=Python )(.+)')
+parsedVersion=$(echo "${version//./}")
+if [[ "$parsedVersion" -ne "2718" ]]
+then
+    echo "no"
+    install_python2718
 fi
 
 echo -n "checking if Python 3 is installed... "
