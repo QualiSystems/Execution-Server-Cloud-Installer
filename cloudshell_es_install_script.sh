@@ -54,13 +54,6 @@ install_mono () {
 	yes | yum -y install gcc 
 	yes | yum -y install python-devel
 	yes | yum -y install openssl-devel
-	# Install requiered packages for the QsDriverHost
-	pip install -r $ES_INSTALL_PATH/packages/VirtualEnvironment/requirements.txt
-	PYTHON2_7_PATH=/usr/local/bin/python2.7
-	if [ ! -L $PYTHON2_7_PATH ];
-	then
-		ln -s /usr/bin/python2.7 $PYTHON2_7_PATH 
-	fi
 }
 
 configure_systemctl_service() {
@@ -86,6 +79,8 @@ install_python2718() {
     rm -f /usr/src/Python-2.7.18.tgz
     
     python2.7 -m ensurepip  # will install pip and setuptools
+    # Install requiered packages for the QsDriverHost
+    python2.7 -m pip install -r $ES_INSTALL_PATH/packages/VirtualEnvironment/requirements.txt
     # create symlink for python
     ln -s /usr/local/bin/python2.7 /usr/local/bin/python
 }
