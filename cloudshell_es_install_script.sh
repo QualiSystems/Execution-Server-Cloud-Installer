@@ -78,9 +78,9 @@ install_python2718() {
     make altinstall
     rm -f /usr/src/Python-2.7.18.tgz
     
-    python2.7 -m ensurepip  # will install pip and setuptools
+    /usr/local/bin/python2.7 -m ensurepip  # will install pip and setuptools
     # Install requiered packages for the QsDriverHost
-    python2.7 -m pip install -r $ES_INSTALL_PATH/packages/VirtualEnvironment/requirements.txt
+    /usr/local/bin/python2.7 -m pip install -r $ES_INSTALL_PATH/packages/VirtualEnvironment/requirements.txt
     # create symlink for python
     ln -s /usr/local/bin/python2.7 /usr/local/bin/python
 }
@@ -167,9 +167,9 @@ else
 fi
 
 # install python packages
-python -m pip install pip==19.2.3 -U
-python -m pip install virtualenv==20.13.0 -U
-python -m pip install wheel==0.37.1 -U
+/usr/local/bin/python -m pip install pip==19.2.3 -U
+/usr/local/bin/python -m pip install virtualenv==20.13.0 -U
+/usr/local/bin/python -m pip install wheel==0.37.1 -U
 python3 -m pip install pip==21.2.4 -U
 python3 -m pip install virtualenv==20.13.0 -U
 python3 -m pip install wheel==0.37.1 -U
