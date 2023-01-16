@@ -7,20 +7,20 @@ Help()
     # Display Help
     echo "Execution Server installation."
     echo
-    echo "Syntax: $0 [-h|s|u|p|n|o]"
+    echo "Syntax: $0 [-h|s|u|p|n]"
     echo "Mandatory options:"
     echo "h     Print this Help."
     echo "s     Cloudshell Server Address."
     echo "u     Cloudshell Server User."
     echo "p     Cloudshell Server Password."
     echo "n     Execution Server Name."
-    echo "o     Operation System. Possible values: rhel, ubuntu"
     echo
 }
 
 ############################################################
 #                        Variables                         #
 ############################################################
+ES_DOWNLOAD_LINK="https://quali-prod-binaries.s3.amazonaws.com/2022.2.0.1489-184885/ES/exec.tar"
 ES_INSTALL_PATH="/opt/ExecutionServer/"
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
@@ -38,26 +38,24 @@ configure_systemctl_service() {
 	systemctl enable es
 }
 
-install_rpm_packages() {
-    # Try to remove existed mono installation
-    echo "Uninstalling old Mono..."
-    yum remove mono
-    yum autoremove
-
-    # Install all necessary rpm-packages
-    echo "Installing all necessary RPM-packages... "
-    yum --disablerepo=* localinstall $SCRIPT_PATH/os_pkgs/*.rpm -y --skip-broken
-}
-
 install_deb_packages() {
     # Try to remove existed mono installation
     echo "Uninstalling old Mono..."
     apt remove mono
     apt autoremove -y
 
+    # Add Xamarin repo
+    apt install gnupg ca-certificates
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+    echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+    apt update
+
+    # Install Mono
+    apt install mono-complete=6.12.* -y
+
     # Install all necessary deb-packages
     echo "Installing all necessary DEB-packages... "
-    apt install $SCRIPT_PATH/os_pkgs/* -y
+    apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev zlib* python-pip -y
 }
 
 install_python2718() {
@@ -107,25 +105,7 @@ install_python3() {
 #                 Process the input options                #
 ############################################################
 
-if [ ! -f $SCRIPT_PATH/ExecutionServer.tar ]
-then
-    echo -e "\033[0;31m File $SCRIPT_PATH/ExecutionServer.tar does not exist \033[0m";
-    exit 1
-fi
-
-if [ ! -d $SCRIPT_PATH/os_pkgs ]
-then
-    echo -e "\033[0;31m Directory $SCRIPT_PATH/os_pkgs DOES NOT exists. \033[0m"
-    exit 2
-fi
-
-if [ ! -d $SCRIPT_PATH/python_pkgs ]
-then
-    echo -e "\033[0;31m Directory $SCRIPT_PATH/python_pkgs DOES NOT exists. \033[0m"
-    exit 2
-fi
-
-while getopts h:s:u:p:n:o: flag
+while getopts h:s:u:p:n: flag
 do
     case "${flag}" in
         h) # Display Help and exit
@@ -134,7 +114,6 @@ do
         u) cs_server_user=${OPTARG};; # Set Cloudshell Server Username
         p) cs_server_pass=${OPTARG};; # Set Cloudshell Server Password
         n) es_name=${OPTARG};;        # Set Execution Server Name
-        o) os=${OPTARG};;             # Set Operation System
         \?) # Raise error, display Help and exit
            echo -e "\033[0;31m Error: Invalid option provided \033[0m"; Help; exit 1;;
     esac
@@ -162,34 +141,20 @@ if [ -z "$cs_server_pass" ]; then
     cs_server_pass="admin"
 fi
 
-if [ -z "$os" ]; then
-    echo -e "\033[0;33m Operation System is not specified. \033[0m";
-    exit 1
-else
-    if [[ "$os" != "rhel" ]] && [[ "$os" != "ubuntu" ]]; then
-        echo -e "\033[0;33m Unsupported Operation System. Possible values: rhel, ubuntu. \033[0m";
-    fi
-fi
-
 # Create installation directory
 mkdir -p $ES_INSTALL_PATH
 
-# Unpack ExecutionServer archive to installation directory
-tar -xf ExecutionServer.tar -C $ES_INSTALL_PATH
+install_deb_packages
 
-
-if [[ "$os" == "rhel" ]]; then
-    install_rpm_packages
-else
-    install_deb_packages
-
-    lsb_release_path=$(which lsb_release)
-    if [ -n "$lsb_release_path" ]; then
-        mv $lsb_release_path $lsb_release_path.backup
-    fi
-
+lsb_release_path=$(which lsb_release)
+if [ -n "$lsb_release_path" ]; then
+    mv $lsb_release_path $lsb_release_path.backup
 fi
 
+
+# Download and Unpack ExecutionServer archive to installation directory
+wget $ES_DOWNLOAD_LINK -O ExecutionServer.tar
+tar -xf ExecutionServer.tar -C $ES_INSTALL_PATH
 
 # Install Python 2
 echo -n "Checking if Python 2.7.18 is installed... "
@@ -225,12 +190,12 @@ fi
 /usr/local/bin/python -m pip install --no-index --find-links $ES_INSTALL_PATH/packages/VirtualEnvironment/ -r $ES_INSTALL_PATH/packages/VirtualEnvironment/requirements.txt
 
 # Install python packages
-/usr/local/bin/python -m pip install --no-index --find-links $SCRIPT_PATH/python_pkgs $SCRIPT_PATH/python_pkgs/pip-19.2.3-py2.py3-none-any.whl -U
-/usr/local/bin/python -m pip install --no-index --find-links $SCRIPT_PATH/python_pkgs $SCRIPT_PATH/python_pkgs/virtualenv-20.13.0-py2.py3-none-any.whl -U
-/usr/local/bin/python -m pip install --no-index --find-links $SCRIPT_PATH/python_pkgs $SCRIPT_PATH/python_pkgs/wheel-0.37.1-py2.py3-none-any.whl -U
-python3 -m pip install --no-index --find-links $SCRIPT_PATH/python_pkgs $SCRIPT_PATH/python_pkgs/pip-21.2.4-py3-none-any.whl -U
-python3 -m pip install --no-index --find-links $SCRIPT_PATH/python_pkgs $SCRIPT_PATH/python_pkgs/virtualenv-20.13.0-py2.py3-none-any.whl -U
-python3 -m pip install --no-index --find-links $SCRIPT_PATH/python_pkgs $SCRIPT_PATH/python_pkgs/wheel-0.37.1-py2.py3-none-any.whl -U
+/usr/local/bin/python -m pip install pip==19.2.3 -U
+/usr/local/bin/python -m pip install virtualenv==20.13.0 -U
+/usr/local/bin/python -m pip install wheel==0.37.1 -U
+python3 -m pip install pip==21.2.4 -U
+python3 -m pip install virtualenv==20.13.0 -U
+python3 -m pip install wheel==0.37.1 -U
 
 # Configure the execution server as a service
 configure_systemctl_service
