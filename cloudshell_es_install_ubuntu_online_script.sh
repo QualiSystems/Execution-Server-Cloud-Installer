@@ -61,7 +61,7 @@ install_deb_packages() {
 install_python2718() {
     echo "Installing Python 2.7.18"
     cd /usr/src
-    cp $SCRIPT_PATH/Python-2.7.18.tgz ./
+    wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
     tar xzf Python-2.7.18.tgz
     cd Python-2.7.18
     ./configure --enable-optimizations
@@ -79,7 +79,7 @@ install_python2718() {
 install_python3() {
     echo "Installing Python 3.9.9"
     cd /usr/src
-    cp $SCRIPT_PATH/Python-3.9.9.tgz ./
+    wget https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tgz
     tar xzf Python-3.9.9.tgz
     cd Python-3.9.9
     ./configure --prefix=/usr --enable-optimizations
