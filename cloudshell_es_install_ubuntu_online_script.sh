@@ -20,7 +20,7 @@ Help()
 ############################################################
 #                        Variables                         #
 ############################################################
-ES_DOWNLOAD_LINK="https://quali-prod-binaries.s3.amazonaws.com/2022.2.0.1489-184885/ES/exec.tar"
+ES_DOWNLOAD_LINK="https://cf-dynamic-execution-server.s3.amazonaws.com/execution-server/ExecutionServer.tar"
 ES_INSTALL_PATH="/opt/ExecutionServer/"
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
