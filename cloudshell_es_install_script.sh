@@ -136,12 +136,14 @@ else
 	install_mono
 fi
 
-echo -n "checking if Python 3 is installed... "
-if ! [type python3 &> /dev/null]
-    then
-        echo "no"
-        install_python3
-else    
+# install_python3 builds Python 3.7 and repoints /usr/bin/python3 at it, and the pip pins
+# below are matched to that build -- so this must test for 3.7 specifically, not for any python3.
+echo -n "Checking if Python 3.7 is installed... "
+if ! python3 -c 'import sys; sys.exit(0 if sys.version_info[:2] == (3, 7) else 1)' >/dev/null 2>&1
+then
+    echo "no"
+    install_python3
+else
     echo "yes"
 fi
 
